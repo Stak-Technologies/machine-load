@@ -2,5 +2,6 @@
   "name": "machine-load",
   "version": "0.1.0",
   "description": "Shows this Mac's load number as a widget, with a plain-English breakdown of what is using it and which Claude session started it.",
-  "types": "./types/index.d.ts"
+  "types": "./types/index.d.ts",
+  "license": "MIT"
 }

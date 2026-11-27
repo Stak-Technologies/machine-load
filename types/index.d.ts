@@ -62,6 +62,6 @@ export type View = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'machine-load': { snapshot: Shaped<Snapshot | null>; isDetailsOpen: boolean; view: View }
+    'machine-load': { snapshot: Shaped<Snapshot | null>; isDetailsOpen: boolean; isDemo: boolean; view: View }
   }
 }

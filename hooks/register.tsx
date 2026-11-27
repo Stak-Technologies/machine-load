@@ -4,6 +4,7 @@ import type { EngineInterface as Engine, Register } from 'claude-code'
 import type { Snapshot } from '../types'
 import { ageOf, buildSnapshot, explain, isUsableSample, liveSessions, parsePs, verdict } from './sample'
 import type { DockerInput, SessionInfo } from './sample'
+import { DEMO_SNAPSHOT } from './demo'
 import { details } from './details'
 import { DEFAULT_VIEW, openSorted } from './state'
 
@@ -13,6 +14,7 @@ const TICK_MS = 10_000
 // The tag declines a snapshot an earlier version stored in another shape; change it when Snapshot changes.
 const snapshot = atom({ plugin: 'machine-load', key: 'snapshot' } as const, null, { shape: 'snapshot-2' })
 const view = atom({ plugin: 'machine-load', key: 'view' } as const, DEFAULT_VIEW)
+const isDemo = atom({ plugin: 'machine-load', key: 'isDemo' } as const, false)
 const isDetailsOpen = atom({ plugin: 'machine-load', key: 'isDetailsOpen' } as const, false)
 
 type Shared = { snapshot: Snapshot; cpuSec: Record<string, number> }
@@ -156,7 +158,7 @@ async function readDocker($: Engine): Promise<DockerInput | null> {
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({ name: 'load', description: 'Show this Mac’s load and what is using it' })
+    await $.command.register({ name: 'load', description: 'Show this Mac’s load and what is using it (`/load demo` toggles made-up data for screenshots)' })
     void $.ui.open({ id: PANE, title: 'Machine load' })
     void tick($)
     $.clock.every(TICK_MS, () => void tick($))
@@ -164,7 +166,11 @@ export const register: Register = on => {
     return next(e)
   })
 
-  on('command.run', { command: 'load' }, async $ => {
+  on('command.run', { command: 'load' }, async ($, e) => {
+    if (e.args.trim() === 'demo') {
+      const isOn = await update($, isDemo, wasOn => !wasOn)
+      return { text: isOn ? 'Demo data on: made-up sessions, safe for screenshots. Run /load demo again to switch back.' : 'Demo data off: showing this Mac again.' }
+    }
     await $.ui.open({ id: PANE, title: 'Machine load' })
     await update($, isDetailsOpen, () => true)
     await update($, view, openSorted)
@@ -173,7 +179,7 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    const snap = await read($, snapshot)
+    const snap = (await read($, isDemo)) ? DEMO_SNAPSHOT : await read($, snapshot)
     if (e.props.hasSurvey || !snap) return next(e)
 
     return chip($, $.ui.resolve(e), snap)
@@ -182,7 +188,7 @@ export const register: Register = on => {
   // The band stacks each mod's row; this re-lays it so the chip sits on the same line as the other rows.
   on('ui.render', { component: 'AbovePromptList' }, async ($, e, next) => {
     const others = e.props.rows.filter(row => row.plugin !== PLUGIN)
-    const snap = await read($, snapshot)
+    const snap = (await read($, isDemo)) ? DEMO_SNAPSHOT : await read($, snapshot)
     if (!snap || others.length === e.props.rows.length || others.length === 0) return next(e)
     const elements = $.ui.resolve(e)
     const rest = await next({ ...e, props: { ...e.props, rows: others } })
@@ -212,7 +218,7 @@ export const register: Register = on => {
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const elements = $.ui.resolve(e)
     const { Box, Text, Button, Svg } = elements as typeof elements & { Svg?: any }
-    const snap = await read($, snapshot)
+    const snap = (await read($, isDemo)) ? DEMO_SNAPSHOT : await read($, snapshot)
     if (!snap) return <Text dimColor>Measuring this Mac…</Text>
 
     const mood = verdict(snap.load1, snap.cores)

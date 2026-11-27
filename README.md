@@ -18,6 +18,7 @@ An unofficial open-source utility from Stak Technologies. Not a supported produc
   - **Mac apps and system.**
 - **A Docker drill-down.** Each container shows its image, the branch and step it is running, how long it has been up, and the session that started it.
 - **Search** across sessions, folders, branches and programs. Case, spaces and dashes are ignored, so `billing api` finds `billing-api-worktree`.
+- **`/load demo`** swaps in made-up sessions, so you can take screenshots without showing your own work. Run it again to switch back.
 - **Plain-English labels** such as "Jest test worker", "Next.js dev server" and "Playwright test browser", instead of raw command lines.
 
 ## Install
