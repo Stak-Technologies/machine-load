@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { arrange, buildSnapshot, describe, explain, liveSessions, matches, owningSession, parseCpuTime } from '../hooks/sample'
+import { arrange, buildSnapshot, describe, explain, isUsableSample, liveSessions, matches, owningSession, parseCpuTime } from '../hooks/sample'
 
 test('cpu time parses minutes, hours and days', async () => {
   expect(parseCpuTime('1:30.50')).toBe(90.5)
@@ -169,4 +169,11 @@ test('without CI_SHA a container links to the one docker run using its image', a
   })
   const session = snapshot.sections.find(s => s.key === 'sessions')?.groups[0]
   expect(session?.containers.map(c => [c.label, c.owner])).toEqual([['Redis cache', 'Search service']])
+})
+
+test('a timed-out sysctl or ps is not a sample, so load never drops to 0', async () => {
+  const ps = '99 1 0:10.00 1000 S claude'
+  expect(isUsableSample(ps, '{ 334.13 213.05 140.70 }\n10')).toBe(true)
+  expect(isUsableSample(ps, '')).toBe(false)
+  expect(isUsableSample('', '{ 1.0 1.0 1.0 }\n10')).toBe(false)
 })

@@ -68,6 +68,11 @@ export function parsePs(stdout: string): PsRow[] {
     }))
 }
 
+// Under heavy load `sysctl` or `ps` can time out and answer nothing; a sample built from that would read as load 0.
+export function isUsableSample(ps: string, loadavg: string): boolean {
+  return parseLoad(loadavg).loads.length === 3 && parsePs(ps).length > 0
+}
+
 export function parseLoad(stdout: string): { loads: number[]; cores: number } {
   const [loadLine = '', coreLine = ''] = stdout.trim().split('\n')
   const loads = (loadLine.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number)

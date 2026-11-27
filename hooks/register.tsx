@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { EngineInterface as Engine, Register } from 'claude-code'
 
 import type { Snapshot } from '../types'
-import { ageOf, buildSnapshot, explain, liveSessions, parsePs, verdict } from './sample'
+import { ageOf, buildSnapshot, explain, isUsableSample, liveSessions, parsePs, verdict } from './sample'
 import type { DockerInput, SessionInfo } from './sample'
 import { details } from './details'
 import { DEFAULT_VIEW, openSorted } from './state'
@@ -58,6 +58,11 @@ async function tick($: Engine) {
       run($, ['memory_pressure', '-Q']),
       run($, ['sh', '-c', 'for f in "$HOME"/.claude/sessions/*.json; do tr -d "\\n" < "$f"; echo; done']),
     ])
+
+    if (!isUsableSample(ps, loadavg)) {
+      if (shared) await update($, snapshot, () => shared!.snapshot)
+      return
+    }
 
     const sessions: SessionInfo[] = sessionText
       .split('\n')
@@ -124,7 +129,10 @@ async function tick($: Engine) {
     }
 
     const next = buildSnapshot(base)
-    await $.fs.write(file, JSON.stringify(next))
+    // Write then rename, so a session reading mid-write never sees half a file and drops the history.
+    const temp = `${file}.${at}.tmp`
+    await $.fs.write(temp, JSON.stringify(next))
+    await run($, ['mv', '-f', temp, file])
     await update($, snapshot, () => next.snapshot)
   } finally {
     isTicking = false
