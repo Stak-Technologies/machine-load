@@ -1,0 +1,5 @@
+{
+  "name": "machine-load",
+  "owner": { "name": "Stak Technologies, Inc." },
+  "plugins": [{ "name": "machine-load", "source": "./" }]
+}
