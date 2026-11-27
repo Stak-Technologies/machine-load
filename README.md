@@ -34,7 +34,7 @@ Answer `y` to add the marketplace, then pick a scope. The chip appears above the
 
 In order:
 
-1. **Parent processes.** Walk up a process's parents until reaching a live Claude Code session (from `~/.claude/sessions/*.json`, checked against the process start time so a reused PID is never credited to the wrong session).
+1. **Parent processes.** Walk up a process's parents until reaching a live Claude Code session (from `~/.claude/sessions/*.json`, checked against the process start time so a reused PID is not credited to the wrong session).
 2. **`CLAUDE_PID`.** Background jobs whose shell exited are re-parented to launchd but still carry the `CLAUDE_PID` of the session that started them. Only that one variable is read from a process's environment, and the rest is discarded straight away.
 3. **Docker.**
    - A container is tied to the `docker run` command that started it, and that command is traced as in steps 1–2.
@@ -45,9 +45,9 @@ In order:
 
 ## Privacy
 
-- Command-line arguments are never shown. Labels come from a fixed list or from a script's file name only.
-- Of a process's environment, only `CLAUDE_PID` is read. Of a container's environment, only `CI_SHA` and `CI_BRANCH`.
-- Nothing leaves your machine. To keep the cost low with many sessions open, one session samples every 10 seconds and the others read its result from `~/.claude/state/machine-load.json`.
+- Full command lines are never shown. Labels come from a fixed list, the program name, a script's file name, a Python module name (`-m`) or an npm script name.
+- Of a process's environment, only `CLAUDE_PID` is kept: `ps` reads the rest, which is discarded at once and never stored or shown. Of a container's environment, only `CI_SHA` and `CI_BRANCH` leave Docker.
+- Nothing leaves your machine. To keep the cost low with many sessions open, one session samples every 10 seconds and the others read its result from `~/.claude/state/machine-load.json`. That file holds labels, session names, folder paths and branch names; never command-line arguments or environment values. If `DOCKER_HOST` points at a remote Docker server, the plugin's `docker` calls go there.
 
 ## Limits
 

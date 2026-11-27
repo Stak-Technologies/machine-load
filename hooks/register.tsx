@@ -266,7 +266,7 @@ export const register: Register = on => {
         {isOpen && (
           <Text size="caption" dimColor>
             CPU % is a share of one core (100% = one core fully busy; {snap.cores * 100}% = the whole Mac). Docker rows
-            show the gates and databases inside Docker&apos;s VM, so their CPU is also part of the Docker row. Fan speed needs
+            show the CI containers and databases inside Docker&apos;s VM, so their CPU is also part of the Docker row. Fan speed needs
             admin rights on Apple Silicon, so it is not shown.
           </Text>
         )}
