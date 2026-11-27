@@ -8,6 +8,8 @@ An unofficial open-source utility from Stak Technologies. Not a supported produc
 
 **macOS only. Unofficial: not affiliated with or endorsed by Anthropic. Provided as-is, with no support.**
 
+![The machine-load panel: load explained in plain English, a 30-minute chart, and a table grouped by Claude session](docs/screenshot-table.png)
+
 ## What you get
 
 - **A load chip above the prompt.** It shows the load average with a coloured dot (calm, busy, overloaded) and opens the panel when clicked. When another mod already has a row there, the chip sits on the same line. It also adds a small 30-minute load chart beside the [ponytail](https://github.com/DietrichGebert/ponytail) band when that band is expanded.
