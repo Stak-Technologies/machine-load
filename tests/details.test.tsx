@@ -69,3 +69,13 @@ test('expand all opens every section and Docker; collapse all closes them', asyn
   expect(shut.some((l: string) => l.includes('Billing API'))).toBe(false)
   await ui.unmount()
 })
+
+test('typing in search is never overwritten by a redraw', async ($, on) => {
+  seed(on)
+  const ui = await $.ui.mount({ ...PANE, surface: 'desktop' } as any)
+  await ui.press({ key: 'details' } as any)
+  await ui.input({ key: 'search', text: 'mob', kind: 'change' } as any)
+  const field = (await ui.find({ type: 'Input', key: 'search' } as any)) as any
+  expect(field?.props?.value).toBe(undefined)
+  await ui.unmount()
+})

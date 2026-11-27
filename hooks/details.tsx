@@ -164,7 +164,6 @@ export function details($: Engine, elements: Elements, snap: Snapshot, view: Vie
           <Input
             key="search"
             placeholder="Search a session, folder, branch or program (e.g. billing api)"
-            value={view.query}
             onInput={(value: string) => setView(v => ({ ...v, query: value }))}
             onSubmit={(value: string) => setView(v => ({ ...v, query: value }))}
           />
