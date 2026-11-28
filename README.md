@@ -50,7 +50,7 @@ In order:
 
 - Full command lines are never shown. Labels come from a fixed list, the program name, a script's file name, a Python module name (`-m`) or an npm script name.
 - Of a process's environment, only `CLAUDE_PID` is kept: `ps` reads the rest, which is discarded at once and never stored or shown. Of a container's environment, only `CI_SHA` and `CI_BRANCH` leave Docker.
-- Nothing leaves your machine. To keep the cost low with many sessions open, one session samples every 10 seconds and the others read its result from `~/.claude/state/machine-load.json`. That file holds labels, session names, folder paths and branch names; never command-line arguments or environment values. If `DOCKER_HOST` points at a remote Docker server, the plugin's `docker` calls go there.
+- Nothing leaves your machine. To keep the cost low with many sessions open, one session samples every 10 seconds and the others read its result from `~/.claude/state/machine-load-v2.json`. That file holds labels, session names, folder paths and branch names; never command-line arguments or environment values. If `DOCKER_HOST` points at a remote Docker server, the plugin's `docker` calls go there.
 
 ## Limits
 

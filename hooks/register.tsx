@@ -39,7 +39,7 @@ async function tick($: Engine) {
   isTicking = true
   try {
     home ||= await run($, ['sh', '-c', 'printf %s "$HOME"'])
-    const file = `${home}/.claude/state/machine-load.json`
+    const file = `${home}/.claude/state/machine-load-v2.json`
     const at = await $.clock.now()
     let shared: Shared | null = null
     try {
